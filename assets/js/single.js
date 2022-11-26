@@ -1,4 +1,21 @@
 var issueContainerEl = document.querySelector("#issues-container");
+var limitWarningEl = document.querySelector('#limit-warning');
+
+var displayWarning = function (repo) {
+  //Add text to warning container
+  limitWarningEl.textContent = 'To see more than 30 issues, visit ';
+
+  //Create an <a> element to add the link to the repo issues
+  var linkEl = document.createElement('a');
+
+  //Append a link element with an href attribute that points to https://github.com/<repo>/issues
+  linkEl.textContent = 'see more issues on GitHub.com';
+  linkEl.setAttribute('href', 'https://github.com/' + repo + '/issues');
+  linkEl.setAttribute('target', '_blank');
+
+  //Append your link to the warning container
+  limitWarningEl.appendChild(linkEl);
+}
 
 
 var getRepoIssues = function (user_repo) {
@@ -10,9 +27,17 @@ var getRepoIssues = function (user_repo) {
       if (response.ok) {
         response.json()
           .then(function (data) {
-            //Pass response data to dom function
+            //Check if API has paginated issues (more than 30 issues)
+            if (response.headers.get('Link')) {
+              displayWarning(user_repo);
+              //console.log('repo has more than 30 issues')
+            }
+
+            //Pass response data to DOM function
             displayIssues(data);
             console.log(data);
+
+
           })
       } else {
         alert('There was a problem with your request');
@@ -62,4 +87,7 @@ var displayIssues = function (issues) {
   }
 }
 
-getRepoIssues('alexJCturbo/git-it-done');
+getRepoIssues('facebook/react');
+//getRepoIssues('alexJCturbo/git-it-done');
+
+//facebook/react, expressjs/express, angular/angular, alexJCturbo/taskmaster, alexJCturbo/git-it-done
