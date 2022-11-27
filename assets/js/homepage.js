@@ -75,9 +75,11 @@ var displayRepos = function (repos, searchTerm) {
     //format repo name
     var repoName = repos[i].owner.login + '/' + repos[i].name
 
-    //Create a container for each repo
-    var repoEl = document.createElement("div");
+    //Create a container using an <a> element for each repo and adding the 'href' attribute
+    var repoEl = document.createElement("a");
     repoEl.classList = "list-item flex-row justify-space-between align-center";
+    //Create a link for each repo
+    repoEl.setAttribute('href', './single-repo.html?repo=' + repoName);
 
     //Create a <span> element to hold the repository name
     var titleEl = document.createElement("span");

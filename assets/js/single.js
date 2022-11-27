@@ -1,5 +1,28 @@
 var issueContainerEl = document.querySelector("#issues-container");
 var limitWarningEl = document.querySelector('#limit-warning');
+var repoNameEl = document.querySelector('#repo-name');
+
+var getRepoName = function () {
+  //Assigning the query string to a variable (in this case the query string format looks like: ?repo="username"/"repo")
+  //The .location contains information of the current URL and .search returns the URL query (including the "?")
+  //Grab repo name from url query string
+  var queryString = document.location.search;
+  //After split we have an array with 2 elements. We retieve the second using the [1] index.
+  var repoName = queryString.split('=')[1];
+  //console.log(repoName);
+
+  if (repoName) {
+    //Display  the repo name to the header
+    repoNameEl.textContent = repoName;
+
+    //Passing the username and repo to the getRepoIssues() function
+    getRepoIssues(repoName)
+  } else {
+    //If no repo was given, redirect to the homepage
+    document.location.replace('./index.html');
+  }
+
+};
 
 var displayWarning = function (repo) {
   //Add text to warning container
@@ -27,20 +50,20 @@ var getRepoIssues = function (user_repo) {
       if (response.ok) {
         response.json()
           .then(function (data) {
+            //Pass response data to DOM function
+            displayIssues(data);
+            //console.log(data);
+
             //Check if API has paginated issues (more than 30 issues)
             if (response.headers.get('Link')) {
               displayWarning(user_repo);
               //console.log('repo has more than 30 issues')
             }
-
-            //Pass response data to DOM function
-            displayIssues(data);
-            console.log(data);
-
-
           })
       } else {
-        alert('There was a problem with your request');
+        //alert('There was a problem with your request');
+        //If not successful, redirect to homepage
+        document.location.replace('./index.html');
       }
     })
   //console.log(user_repo);
@@ -87,7 +110,9 @@ var displayIssues = function (issues) {
   }
 }
 
-getRepoIssues('facebook/react');
+getRepoName();
+
+//getRepoIssues('facebook/react');
 //getRepoIssues('alexJCturbo/git-it-done');
 
 //facebook/react, expressjs/express, angular/angular, alexJCturbo/taskmaster, alexJCturbo/git-it-done
