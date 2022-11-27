@@ -2,6 +2,40 @@ var userFormEl = document.querySelector('#user-form');
 var nameInputEl = document.querySelector('#username');
 var repoContainerEl = document.querySelector("#repos-container");
 var repoSearchTerm = document.querySelector("#repo-search-term");
+var languageButtonsEl = document.querySelector('#language-buttons');
+
+
+var getFeaturedRepos = function (language) {
+  //variable with an API endpoint for the selected language
+  var apiUrl = 'https://api.github.com/search/repositories?q=' + language + '+is:featured&sort=help-wanted-issues';
+  fetch(apiUrl).then(function (res) {
+    if (res.ok) {
+      res.json().then(function (data) {
+        displayRepos(data.items, language);
+        //console.log(data)
+      })
+    } else {
+      alert('Error: GitHub user not found')
+    }
+  })
+}
+//getFeaturedRepos('javascript');
+
+
+var buttonClickHandler = function (event) {
+  //This function must use event delegation to handle all clicks on buttons
+  //The browser's event object will have a target property that tells us exactly which HTML element was interacted with to create the event
+  var language = event.target.getAttribute('data-language');
+  //console.log(language);
+
+  if (language) {
+    getFeaturedRepos(language);
+
+    //Clear old content
+    repoContainerEl.textContent = "";
+  }
+}
+
 
 var formSubmitHandler = function (event) {
   //event.preventDefault() stops the browser from performing the default action the event wants it to do. In the case of submitting a form, it prevents the browser from sending the form's input data to a URL, as we'll handle what happens with the form input data ourselves in JavaScript.
@@ -60,6 +94,7 @@ var getUserRepos = function (user) {
     });
 };
 
+
 var displayRepos = function (repos, searchTerm) {
   //In the case user has no repositories
   if (repos.length === 0) {
@@ -112,6 +147,9 @@ var displayRepos = function (repos, searchTerm) {
   console.log(repos);
   console.log(searchTerm);
 }
+
+//We delegate the click handling of the language buttons to their parent element
+languageButtonsEl.addEventListener('click', buttonClickHandler);
 
 userFormEl.addEventListener('submit', formSubmitHandler);
 //getUserRepos('alexJCturbo');
